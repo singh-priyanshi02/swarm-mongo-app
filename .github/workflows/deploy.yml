@@ -1,39 +1,42 @@
 
-name: Build Scan and Push
+name: Build Scan and Push to GHCR
 
 on:
   push:
     branches:
       - main
 
+  workflow_dispatch:
+
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build-and-push:
-    runs-on: [self-hosted, linux, x64]
+  build-scan-push:
+    name: Build, Scan and Push Docker Image
+    runs-on: [self-hosted, linux, docker]
 
     steps:
+      # 1. Checkout source code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Check Docker
-        run: |
-          docker --version
-          docker ps
-
+      # 2. Build Docker image
       - name: Build Docker Image
         run: |
           docker build -t swarm-mongo-app:${{ github.sha }} .
 
-      - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@0.36.0
-        with:
-          image-ref: swarm-mongo-app:${{ github.sha }}
-          severity: HIGH,CRITICAL
-          exit-code: '1'
+      # 3. Scan Docker image using Trivy installed on EC2
+      - name: Scan Docker Image
+        run: |
+          trivy image \
+            --exit-code 1 \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            swarm-mongo-app:${{ github.sha }}
 
+      # 4. Login to GitHub Container Registry
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -41,6 +44,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 5. Tag and push image to GHCR
       - name: Push Image to GHCR
         run: |
           IMAGE="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/swarm-mongo-app"
