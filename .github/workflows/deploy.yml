@@ -28,7 +28,7 @@ jobs:
           docker build -t swarm-mongo-app:${{ github.sha }} .
 
       - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: swarm-mongo-app:${{ github.sha }}
           severity: HIGH,CRITICAL
