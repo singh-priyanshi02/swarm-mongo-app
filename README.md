@@ -1,5 +1,10 @@
 # Swarm Mongo App – DevOps CI/CD & Auto Scaling
 
+<escape>🚀 **Live Application:** [Open Task Management App](http://52.65.220.143:8080)</escape>
+
+**GitHub Repository:** [swarm-mongo-app](https://github.com/singh-priyanshi02/swarm-mongo-app)
+
+A containerized Task Management application deployed using Docker Swarm with automated CI/CD, Trivy security scanning, GHCR and MongoDB Atlas.
 A containerized Task Management application deployed using Docker Swarm with an automated CI/CD pipeline, Trivy security scanning, GitHub Container Registry (GHCR), MongoDB Atlas, and CPU-based replica auto scaling.
 
 ## Architecture
