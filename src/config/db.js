@@ -1,9 +1,19 @@
 
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    const mongoURI = process.env.MONGODB_URI ||
+      (process.env.MONGODB_URI_FILE
+        ? fs.readFileSync(process.env.MONGODB_URI_FILE, "utf8").trim()
+        : null);
+
+    if (!mongoURI) {
+      throw new Error("MongoDB URI is missing");
+    }
+
+    await mongoose.connect(mongoURI);
 
     console.log("MongoDB Atlas Connected Successfully!");
   } catch (error) {
